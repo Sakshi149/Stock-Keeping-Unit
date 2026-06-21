@@ -1,0 +1,93 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Category {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  codeFormat  String?
+  skuConfig   Json? 
+  skuResetRule  String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  fields      CategoryField[]
+  items       Item[]
+  sequence    Sequence?
+}
+
+model CategoryField {
+  id          String   @id @default(uuid())
+  categoryId  String
+  name        String
+  type        FieldType
+  isRequired  Boolean  @default(false)
+  options     Json?
+   placeholder   String?  
+   defaultValue  String? 
+  minLength    Int?
+  maxLength    Int?
+  regex        String?
+  orderIndex  Int
+
+  category    Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+}
+
+model Item {
+  id          String   @id @default(uuid())
+  categoryId  String
+  code        String   @unique
+  description String?
+  rate        Float?
+  fields      Json
+  status      ItemStatus @default(ACTIVE)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  category    Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+   @@index([categoryId])  
+}
+
+model Sequence {
+  id          String   @id @default(uuid())
+  categoryId  String   @unique
+  current     Int      @default(0)
+  step        Int      @default(1) 
+  startValue Int @default(1) 
+
+  category    Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+}
+
+enum FieldType {
+  TEXT
+  NUMBER
+  DROPDOWN
+  DATE      
+  BOOLEAN
+  ALPHANUMERIC  
+}
+
+enum ItemStatus {
+  ACTIVE
+  INACTIVE
+}
+
+model User {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  password  String
+  role      Role     @default(ADMIN)
+  createdAt DateTime @default(now())
+}
+
+enum Role {
+  ADMIN
+  USER
+}

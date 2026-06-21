@@ -1,0 +1,61 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+.captcha-container {
+  margin-bottom: 20px;
+}
+
+.captcha-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #f0f0f0;
+  padding: 12px;
+  border-radius: 6px;
+  margin-bottom: 10px;
+}
+
+.captcha-text {
+  font-size: 22px;
+  font-weight: bold;
+  letter-spacing: 4px;
+  color: #1e3c72;
+  user-select: none;
+  font-family: 'Poppins', sans-serif;
+}
+
+.refresh-btn {
+  background: none;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  padding: 5px;
+  transition: transform 0.3s;
+  border-radius: 4px;
+}
+
+.refresh-btn:hover {
+  background: rgba(0, 0, 0, 0.05);
+  transform: rotate(180deg);
+}
+
+.captcha-container input {
+  width: 100%;
+  padding: 12px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  background: #fff;
+}
+
+.captcha-container input:focus {
+  outline: none;
+  border-color: #2a5298;
+  box-shadow: 0 0 0 2px rgba(42, 82, 152, 0.1);
+}
+
+.captcha-error {
+  color: #e53e3e;
+  font-size: 12px;
+  margin-top: 5px;
+  margin-bottom: 0;
+}
