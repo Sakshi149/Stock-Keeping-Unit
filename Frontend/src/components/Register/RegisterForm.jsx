@@ -1,13 +1,13 @@
 import { RiEyeCloseFill, RiEyeFill } from "react-icons/ri";
 import { useState } from "react";
 import Captcha from "../Captcha/Captcha";
-import { useNavigate } from "react-router-dom";
 import AuthService from "../../services/AuthService";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const RegisterForm = ({ onSwitch, isCaptchaValid, setIsCaptchaValid }) => {
   const [formData, setFormData] = useState({
+    companyName: "",
     name: "",
     email: "",
     password: "",
@@ -16,8 +16,6 @@ const RegisterForm = ({ onSwitch, isCaptchaValid, setIsCaptchaValid }) => {
 
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-
-  const navigate = useNavigate();
 
   const getPasswordStrength = (password) => {
     if (password.length < 8) return "weak";
@@ -35,13 +33,17 @@ const RegisterForm = ({ onSwitch, isCaptchaValid, setIsCaptchaValid }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if (!formData.companyName.trim()) {
+      toast.warning("Company Name is required");
+      return;
+    }
+
     // Name validation
     if (!formData.name.trim()) {
       toast.warning("Full name is required");
       return;
     }
 
-    // ✅ ADD EMAIL VALIDATION HERE
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
       toast.warning("Enter a valid email address");
       return;
@@ -71,6 +73,7 @@ const RegisterForm = ({ onSwitch, isCaptchaValid, setIsCaptchaValid }) => {
       loadingToast = toast.loading("Creating account...");
 
       await AuthService.register({
+        companyName: formData.companyName,
         name: formData.name,
         email: formData.email,
         password: formData.password,
@@ -80,6 +83,7 @@ const RegisterForm = ({ onSwitch, isCaptchaValid, setIsCaptchaValid }) => {
       toast.success("Registration successful 🎉");
 
       setFormData({
+        companyName: "",
         name: "",
         email: "",
         password: "",
@@ -95,7 +99,6 @@ const RegisterForm = ({ onSwitch, isCaptchaValid, setIsCaptchaValid }) => {
 
       // SWITCH TO LOGIN
       onSwitch();
-
     } catch (err) {
       toast.dismiss(loadingToast);
       toast.error(err.message || "Registration failed");
@@ -105,6 +108,13 @@ const RegisterForm = ({ onSwitch, isCaptchaValid, setIsCaptchaValid }) => {
   return (
     <>
       <form onSubmit={handleSubmit}>
+        <input
+          type="text"
+          name="companyName"
+          placeholder="Company Name"
+          value={formData.companyName}
+          onChange={handleChange}
+        />
         <input
           type="text"
           name="name"
@@ -184,6 +194,7 @@ const RegisterForm = ({ onSwitch, isCaptchaValid, setIsCaptchaValid }) => {
           type="submit"
           className="login-btn"
           disabled={
+            !formData.companyName.trim() ||
             !isStrongPassword ||
             !isCaptchaValid ||
             formData.password !== formData.confirmPassword

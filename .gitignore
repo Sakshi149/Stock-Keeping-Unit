@@ -1,51 +1,5 @@
-# Dependencies
 node_modules/
-
-# Environment Variables
 .env
-.env.local
-.env.production
-.env.development
-
-# Build folders
 dist/
 build/
-
-# Exports
-backend/exports/*
-!backend/exports/.gitkeep
-
-# Logs
-*.log
-logs/
-
-# Coverage
-coverage/
-
-# IDE
-.vscode/
-.idea/
-
-# Qodo
 .qodo/
-
-# OS files
-.DS_Store
-Thumbs.db
-desktop.ini
-
-# Vite
-.vite/
-
-# npm cache
-.npm/
-
-# Temporary files
-*.tmp
-*.temp
-
-# Prisma generated client (if generated outside node_modules)
-src/generated/prisma/
-
-# Database backups (optional)
-# backend/backups/

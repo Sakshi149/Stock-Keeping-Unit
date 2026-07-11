@@ -3,13 +3,9 @@ const express = require("express");
 const router = express.Router();
 
 const itemController = require("./item.controller");
-
 const authMiddleware = require("../../middlewares/auth.middleware");
-
 const { validateBody } = require("../../middlewares/validation.middleware");
 
-
-// PREVIEW ITEM CODE
 router.post(
   "/preview",
   authMiddleware,
@@ -17,8 +13,6 @@ router.post(
   itemController.previewItemCode
 );
 
-
-// CREATE ITEM
 router.post(
   "/",
   authMiddleware,
@@ -26,32 +20,24 @@ router.post(
   itemController.createItem
 );
 
-
-// GET ALL ITEMS
 router.get(
   "/",
   authMiddleware,
   itemController.getItems
 );
 
-
-// GET ITEM BY CODE
 router.get(
   "/code/:code",
   authMiddleware,
   itemController.getItemByCode
 );
 
-
-// GET ITEM BY ID
 router.get(
   "/:id",
   authMiddleware,
   itemController.getItemById
 );
 
-
-// UPDATE ITEM
 router.put(
   "/:id",
   authMiddleware,
@@ -59,8 +45,6 @@ router.put(
   itemController.updateItem
 );
 
-
-// DELETE ITEM
 router.delete(
   "/:id",
   authMiddleware,

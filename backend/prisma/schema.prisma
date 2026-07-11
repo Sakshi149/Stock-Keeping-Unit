@@ -7,70 +7,93 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Category {
-  id          String   @id @default(uuid())
-  name        String   @unique
-  codeFormat  String?
-  skuConfig   Json? 
-  skuResetRule  String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+model Company {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  createdAt DateTime @default(now())
 
-  fields      CategoryField[]
-  items       Item[]
-  sequence    Sequence?
+  users      User[]
+  categories Category[]
+  items      Item[]
+}
+
+model Category {
+  id String @id @default(uuid())
+
+  companyId String
+  company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  name         String
+  codeFormat   String?
+  skuConfig    Json?
+  skuResetRule String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  fields   CategoryField[]
+  items    Item[]
+  sequence Sequence?
+
+  @@unique([companyId, name])
 }
 
 model CategoryField {
-  id          String   @id @default(uuid())
-  categoryId  String
-  name        String
-  type        FieldType
-  isRequired  Boolean  @default(false)
-  options     Json?
-   placeholder   String?  
-   defaultValue  String? 
+  id           String    @id @default(uuid())
+  categoryId   String
+  name         String
+  type         FieldType
+  isRequired   Boolean   @default(false)
+  options      Json?
+  placeholder  String?
+  defaultValue String?
   minLength    Int?
   maxLength    Int?
   regex        String?
-  orderIndex  Int
+  orderIndex   Int
 
-  category    Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
 }
 
 model Item {
-  id          String   @id @default(uuid())
-  categoryId  String
-  code        String   @unique
+  id String @id @default(uuid())
+
+  companyId String
+  company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  categoryId String
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  code        String
+  itemName    String?
   description String?
   rate        Float?
   fields      Json
   status      ItemStatus @default(ACTIVE)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
 
-  category    Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-   @@index([categoryId])  
+  @@unique([companyId, code])
+  @@index([categoryId])
 }
 
 model Sequence {
-  id          String   @id @default(uuid())
-  categoryId  String   @unique
-  current     Int      @default(0)
-  step        Int      @default(1) 
-  startValue Int @default(1) 
+  id         String @id @default(uuid())
+  categoryId String @unique
+  current    Int    @default(0)
+  step       Int    @default(1)
+  startValue Int    @default(1)
 
-  category    Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
 }
 
 enum FieldType {
   TEXT
   NUMBER
   DROPDOWN
-  DATE      
+  DATE
   BOOLEAN
-  ALPHANUMERIC  
+  ALPHANUMERIC
 }
 
 enum ItemStatus {
@@ -79,11 +102,17 @@ enum ItemStatus {
 }
 
 model User {
-  id        String   @id @default(uuid())
-  name      String
-  email     String   @unique
-  password  String
-  role      Role     @default(ADMIN)
+  id String @id @default(uuid())
+
+  companyId String
+  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  name String
+  email String @unique
+  password String
+
+  role Role @default(USER)
+
   createdAt DateTime @default(now())
 }
 

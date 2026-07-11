@@ -1,11 +1,8 @@
 const itemService = require("./item.service");
 
-// ✅ Create Item
 const createItem = async (req, res, next) => {
   try {
-    console.log("🔥 CONTROLLER BODY:", req.body);
-    const item = await itemService.createItem(req.body);
-
+    const item = await itemService.createItem(req.body, req.user);
     res.status(201).json({
       success: true,
       message: "Item created successfully",
@@ -16,11 +13,9 @@ const createItem = async (req, res, next) => {
   }
 };
 
-// ✅ Preview Item Code
 const previewItemCode = async (req, res, next) => {
   try {
-    const code = await itemService.previewCode(req.body);
-
+    const code = await itemService.previewCode(req.body, req.user);
     res.json({
       success: true,
       data: { code },
@@ -30,24 +25,9 @@ const previewItemCode = async (req, res, next) => {
   }
 };
 
-// ✅ Get All Items
-// const getItems = async (req, res, next) => {
-//   try {
-//     const items = await itemService.getItems();
-
-//     res.json({
-//       success: true,
-//       data: items,
-//     });
-//   } catch (error) {
-//     next(error);
-//   }
-// };
-
-// ✅ Get All Items
 const getItems = async (req, res, next) => {
   try {
-    const items = await itemService.getItems(req.query);
+    const items = await itemService.getItems(req.query, req.user);
 
     res.json({
       success: true,
@@ -58,24 +38,9 @@ const getItems = async (req, res, next) => {
   }
 };
 
-// ✅ Get Item by ID
 const getItemById = async (req, res, next) => {
   try {
-    const item = await itemService.getItemById(req.params.id);
-
-    res.json({
-      success: true,
-      data: item,
-    });
-  } catch (error) {
-    next(error);
-  }
-};
-
-// ✅ Get Item by CODE
-const getItemByCode = async (req, res, next) => {
-  try {
-    const item = await itemService.getItemByCode(req.params.code);
+    const item = await itemService.getItemById(req.params.id, req.user);
 
     if (!item) {
       return res.status(404).json({
@@ -92,11 +57,33 @@ const getItemByCode = async (req, res, next) => {
     next(error);
   }
 };
-// ✅ Update Item
+
+const getItemByCode = async (req, res, next) => {
+  try {
+    const item = await itemService.getItemByCode(req.params.code, req.user);
+    if (!item) {
+      return res.status(404).json({
+        success: false,
+        message: "Item not found",
+      });
+    }
+
+    res.json({
+      success: true,
+      data: item,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 const updateItem = async (req, res, next) => {
   try {
-    const item = await itemService.updateItem(req.params.id, req.body);
-
+    const item = await itemService.updateItem(
+      req.params.id,
+      req.body,
+      req.user,
+    );
     res.json({
       success: true,
       message: "Item updated successfully",
@@ -107,11 +94,9 @@ const updateItem = async (req, res, next) => {
   }
 };
 
-// ✅ Delete Item
 const deleteItem = async (req, res, next) => {
   try {
-    const result = await itemService.deleteItem(req.params.id);
-
+    const result = await itemService.deleteItem(req.params.id, req.user);
     res.json({
       success: true,
       message: result.message,

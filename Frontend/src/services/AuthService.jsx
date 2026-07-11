@@ -1,14 +1,12 @@
-const API_BASE_URL = "http://localhost:5001/api/auth/";
+const API_BASE_URL = "https://api.skuoriginal.in/api/auth/";
 
 class AuthService {
   async login({ email, password }) {
     const response = await fetch(`${API_BASE_URL}login`, {
       method: "POST",
-
       headers: {
         "Content-Type": "application/json",
       },
-
       body: JSON.stringify({
         email,
         password,
@@ -21,24 +19,20 @@ class AuthService {
       throw new Error(data.message || "Login failed");
     }
 
-    // SAVE TOKEN
     localStorage.setItem("jwtToken", data.data.token);
-
-    // SAVE USER
     localStorage.setItem("user", JSON.stringify(data.data.user));
 
     return data;
   }
 
-  async register({ name, email, password }) {
+  async register({ companyName, name, email, password }) {
     const response = await fetch(`${API_BASE_URL}register`, {
       method: "POST",
-
       headers: {
         "Content-Type": "application/json",
       },
-
       body: JSON.stringify({
+        companyName,
         name,
         email,
         password,

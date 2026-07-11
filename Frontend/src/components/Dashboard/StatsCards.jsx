@@ -34,7 +34,6 @@ const StatsCards = () => {
         "/api/work-orders?status=DRAFT",
       );
       const draftData = await draftRes.json();
-      console.log("Draft stats response:", draftData);
 
       setCounts({
         workOrders: woData.total || 0,

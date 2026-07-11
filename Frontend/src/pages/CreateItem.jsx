@@ -14,6 +14,7 @@ const CreateItem = () => {
   const [categoryId, setCategoryId] = useState("");
   const [fields, setFields] = useState({});
   const [description, setDescription] = useState("");
+  const [itemName, setItemName] = useState("");
   const [rate, setRate] = useState("");
   const [preview, setPreview] = useState("");
   const [categoryFields, setCategoryFields] = useState([]);
@@ -24,8 +25,12 @@ const CreateItem = () => {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const res = await fetch("http://localhost:5001/api/categories");
-
+        const token = localStorage.getItem("jwtToken");
+        const res = await fetch("https://api.skuoriginal.in/api/categories", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         if (!res.ok) {
           throw new Error("Failed to fetch categories");
         }
@@ -48,7 +53,7 @@ const CreateItem = () => {
       try {
         const token = localStorage.getItem("jwtToken");
 
-        const res = await fetch(`http://localhost:5001/api/items/${id}`, {
+        const res = await fetch(`https://api.skuoriginal.in/api/items/${id}`, {
           headers: {
             ...(token && {
               Authorization: `Bearer ${token}`,
@@ -66,6 +71,7 @@ const CreateItem = () => {
 
         setCategoryId(item.categoryId);
         setFields(item.fields || {});
+        setItemName(item.itemName || "");
         setDescription(item.description || "");
         setRate(item.rate || "");
       } catch (err) {
@@ -94,19 +100,22 @@ const CreateItem = () => {
 
         const token = localStorage.getItem("jwtToken");
 
-        const res = await fetch("http://localhost:5001/api/items/preview", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            ...(token && {
-              Authorization: `Bearer ${token}`,
+        const res = await fetch(
+          "https://api.skuoriginal.in/api/items/preview",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              ...(token && {
+                Authorization: `Bearer ${token}`,
+              }),
+            },
+            body: JSON.stringify({
+              categoryId,
+              fields,
             }),
           },
-          body: JSON.stringify({
-            categoryId,
-            fields,
-          }),
-        });
+        );
 
         if (!res.ok) {
           throw new Error("Preview failed");
@@ -168,8 +177,8 @@ const CreateItem = () => {
 
       const res = await fetch(
         isEditMode
-          ? `http://localhost:5001/api/items/${id}`
-          : "http://localhost:5001/api/items",
+          ? `https://api.skuoriginal.in/api/items/${id}`
+          : "https://api.skuoriginal.in/api/items",
         {
           method: isEditMode ? "PUT" : "POST",
           headers: {
@@ -180,6 +189,7 @@ const CreateItem = () => {
           },
           body: JSON.stringify({
             categoryId,
+            itemName,
             fields,
             description,
             rate,
@@ -216,6 +226,7 @@ const CreateItem = () => {
       // RESET FORM
       setCategoryId("");
       setFields({});
+      setItemName("");
       setDescription("");
       setRate("");
       setCategoryFields([]);
@@ -367,6 +378,20 @@ const CreateItem = () => {
                     </div>
                   </div>
                 )}
+              </div>
+
+              {/* ITEM NAME */}
+              {/* ITEM NAME */}
+              <div className="item-form-section">
+                <h3 className="item-section-title">Item Name</h3>
+
+                <input
+                  type="text"
+                  className="item-modern-input"
+                  placeholder="Enter item name..."
+                  value={itemName}
+                  onChange={(e) => setItemName(e.target.value)}
+                />
               </div>
 
               {/* DESCRIPTION */}

@@ -15,40 +15,24 @@ const CategoriesPage = () => {
   const [selectedCategoryData, setSelectedCategoryData] = useState(null);
   const [showExportMenu, setShowExportMenu] = useState(false);
 
-  // const fetchCategories = async () => {
-  //   setLoading(true);
-  //   try {
-  //     const res = await fetch("http://localhost:5001/api/categories");
-  //     const data = await res.json();
-  //     console.log("API DATA:", data);
-
-  //     const categoryArray = Array.isArray(data)
-  //       ? data
-  //       : data.data || data.categories || [];
-
-  //     setCategories(categoryArray);
-  //   } catch (err) {
-  //     console.error(err);
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
-
   const fetchCategories = async (categoryName = "ALL") => {
     setLoading(true);
 
     try {
-      let url = "http://localhost:5001/api/categories";
+      let url = "https://api.skuoriginal.in/api/categories";
 
       if (categoryName !== "ALL") {
         url += `?name=${encodeURIComponent(categoryName)}`;
       }
 
-      const res = await fetch(url);
+      const token = localStorage.getItem("jwtToken");
 
+      const res = await fetch(url, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       const data = await res.json();
-
-      console.log("API DATA:", data);
 
       const categoryArray = Array.isArray(data)
         ? data
@@ -81,15 +65,18 @@ const CategoriesPage = () => {
       try {
         const token = localStorage.getItem("jwtToken");
 
-        const res = await fetch(`http://localhost:5001/api/categories/${id}`, {
-          method: "DELETE",
+        const res = await fetch(
+          `https://api.skuoriginal.in/api/categories/${id}`,
+          {
+            method: "DELETE",
 
-          headers: token
-            ? {
-                Authorization: `Bearer ${token}`,
-              }
-            : {},
-        });
+            headers: token
+              ? {
+                  Authorization: `Bearer ${token}`,
+                }
+              : {},
+          },
+        );
 
         if (res.ok) {
           alert("Category deleted successfully!");
@@ -174,17 +161,6 @@ const CategoriesPage = () => {
           <h1 className="categories-title">All Categories</h1>
         </div>
 
-        {/* Stats Bar */}
-        {/* <div className="categories-stats">
-          <div className="categories-count">
-            <span className="categories-count-label">Total Categories</span>
-            <span className="categories-count-number">{categories.length}</span>
-          </div>
-          <button className="categories-refresh-btn" onClick={handleRefresh}>
-            ↻ Refresh
-          </button>
-        </div> */}
-
         <div className="categories-stats">
           <div className="categories-count">
             <span className="categories-count-label">Total Categories</span>
@@ -244,9 +220,6 @@ const CategoriesPage = () => {
               ↻ Refresh
             </button>
           </div>
-          {/* <button className="categories-refresh-btn" onClick={handleRefresh}>
-            ↻ Refresh
-          </button> */}
         </div>
 
         {/* Content */}
@@ -283,19 +256,6 @@ const CategoriesPage = () => {
                       {cat.fields?.length || 0} fields
                     </span>
                   </div>
-
-                  {/* Category Info */}
-                  {/* <div className="category-info">
-                    <div className="category-info-item">
-                      <div className="category-info-icon">🆔</div>
-                      <div className="category-info-text">
-                        <div className="category-info-label">ID</div>
-                        <div className="category-info-value category-id">
-                          {cat.id}
-                        </div>
-                      </div>
-                    </div>
-                  </div> */}
 
                   {/* Code Format */}
                   {cat.codeFormat && (
@@ -379,19 +339,6 @@ const CategoriesPage = () => {
                   <div className="sku-value">
                     {selectedCategoryData.codeFormat}
                   </div>
-
-                  {/* <button
-                    className="copy-btn"
-                    onClick={() => {
-                      navigator.clipboard.writeText(
-                        selectedCategoryData.codeFormat,
-                      );
-
-                      alert("SKU Structure copied!");
-                    }}
-                  >
-                    📋 Copy
-                  </button> */}
                 </div>
               </div>
             )}

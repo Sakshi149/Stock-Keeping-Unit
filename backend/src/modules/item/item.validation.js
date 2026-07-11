@@ -4,7 +4,6 @@ const validateItem = (categoryFields, inputFields) => {
   for (const field of categoryFields) {
 const value = inputFields[field.name.toUpperCase()];
 
-    // Required check
     if (field.isRequired && (value === undefined || value === null || value === "")) {
       errors.push(`${field.name} is required`);
       continue;

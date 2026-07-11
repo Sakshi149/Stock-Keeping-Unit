@@ -8,10 +8,6 @@ import "../../styles/categoryForm.css";
 function CategoryForm({ isEdit = false, categoryId = null }) {
   const [step, setStep] = useState(1);
   const [categoryName, setCategoryName] = useState("");
-  // const [fields, setFields] = useState([
-  //   { name: "BRAND", type: "TEXT", required: true },
-  //   { name: "MODEL", type: "TEXT", required: false },
-  // ]);
   const [fields, setFields] = useState([]);
   const [format, setFormat] = useState("");
   const [separator, setSeparator] = useState("-");
@@ -36,17 +32,22 @@ function CategoryForm({ isEdit = false, categoryId = null }) {
   const next = () => setStep((prev) => Math.min(prev + 1, 4));
   const back = () => setStep((prev) => Math.max(prev - 1, 1));
 
+  const token = localStorage.getItem("jwtToken");
+
   const fetchCategory = async () => {
     try {
       const res = await fetch(
-        `http://localhost:5001/api/categories/${categoryId}`,
+        `https://api.skuoriginal.in/api/categories/${categoryId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
       );
 
       const data = await res.json();
 
       const category = data.data;
-
-      console.log("EDIT CATEGORY:", category);
 
       setCategoryName(category.name || "");
 
@@ -98,11 +99,9 @@ function CategoryForm({ isEdit = false, categoryId = null }) {
         })),
       };
 
-      console.log("🚀 Sending:", payload);
-
       const url = isEdit
-        ? `http://localhost:5001/api/categories/${categoryId}`
-        : "http://localhost:5001/api/categories";
+        ? `https://api.skuoriginal.in/api/categories/${categoryId}`
+        : "https://api.skuoriginal.in/api/categories";
 
       const method = isEdit ? "PUT" : "POST";
 
@@ -132,7 +131,6 @@ function CategoryForm({ isEdit = false, categoryId = null }) {
           ? "✅ Category updated successfully!"
           : "✅ Category created successfully!",
       );
-      console.log("RESPONSE:", data);
       setStep(1);
       setCategoryName("");
       setFields([]);
@@ -148,9 +146,7 @@ function CategoryForm({ isEdit = false, categoryId = null }) {
 
   return (
     <div className="form-grid">
-      {/* LEFT SIDE → FORM */}
       <div className="form-left">
-        {/* Stepper */}
         <div className="stepper">
           {stepTitles.map((title, index) => (
             <div
@@ -257,7 +253,6 @@ function CategoryForm({ isEdit = false, categoryId = null }) {
         </div>
       </div>
 
-      {/* RIGHT SIDE → LIVE PREVIEW (ALWAYS VISIBLE) */}
       <div className="form-right">
         <LivePreview
           format={format}

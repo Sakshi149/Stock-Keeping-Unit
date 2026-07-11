@@ -2,48 +2,26 @@ const service = require("./category.service");
 
 exports.createCategory = async (req, res, next) => {
   try {
-    console.log("BODY:", req.body); 
-
-    const data = req.body;
-    const category = await service.createCategory(data);
+    const category = await service.createCategory(req.body, req.user);
 
     return res.status(201).json({
       success: true,
       message: "Category created successfully",
-      data: category
+      data: category,
     });
-
   } catch (error) {
-    console.error("ERROR:", error.message);
-next(error);
-    
+    next(error);
   }
 };
 
-// exports.getAllCategories = async (req, res, next) => {
-//   try {
-//     const categories = await service.getAllCategories();
-
-//     res.json({
-//       success: true,
-//       data: categories
-//     });
-
-//   } catch (error) {
-//     next(error);
-//   }
-// };
-
 exports.getAllCategories = async (req, res, next) => {
   try {
-
-    const categories = await service.getAllCategories(req.query);
+    const categories = await service.getAllCategories(req.query, req.user);
 
     res.json({
       success: true,
-      data: categories
+      data: categories,
     });
-
   } catch (error) {
     next(error);
   }
@@ -51,69 +29,44 @@ exports.getAllCategories = async (req, res, next) => {
 
 exports.getCategoryById = async (req, res, next) => {
   try {
-
-    const category = await service.getCategoryById(req.params.id);
-
-    if (!category) {
-  return res.status(404).json({
-    success: false,
-    message: "Category not found"
-  });
-}
+    const category = await service.getCategoryById(req.params.id, req.user);
 
     res.json({
       success: true,
-      data: category
+      data: category,
     });
-
   } catch (error) {
     next(error);
-   
   }
-
 };
 
 exports.updateCategory = async (req, res, next) => {
   try {
-     const category = await service.updateCategory(req.params.id, req.body);
+    const category = await service.updateCategory(
+      req.params.id,
+      req.body,
+      req.user
+    );
 
-     if (!category) {
-  return res.status(404).json({
-    success: false,
-    message: "Category not found"
-  });
-}
-
-   res.json({
+    res.json({
       success: true,
       message: "Category updated successfully",
-      data: category
+      data: category,
     });
-
   } catch (error) {
     next(error);
   }
-
 };
 
 exports.deleteCategory = async (req, res, next) => {
   try {
-    const result = await service.deleteCategory(req.params.id);
-
-    if (!result) {
-  return res.status(404).json({
-    success: false,
-    message: "Category not found"
-  });
-} 
+    const result = await service.deleteCategory(req.params.id, req.user);
 
     res.json({
       success: true,
-      message: result.message
+      message: result.message,
     });
-
   } catch (error) {
     next(error);
   }
-
 };

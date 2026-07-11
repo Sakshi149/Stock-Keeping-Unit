@@ -22,7 +22,7 @@ const ItemsPage = () => {
     try {
       const token = localStorage.getItem("jwtToken");
 
-      let url = "http://localhost:5001/api/items";
+      let url = "https://api.skuoriginal.in/api/items";
 
       if (categoryId !== "ALL") {
         url += `?categoryId=${categoryId}`;
@@ -38,8 +38,6 @@ const ItemsPage = () => {
 
       const data = await res.json();
 
-      console.log("ITEM PAGE:", data);
-
       const itemArray = Array.isArray(data) ? data : data.data || [];
 
       setItems(itemArray);
@@ -52,7 +50,17 @@ const ItemsPage = () => {
 
   const fetchCategories = async () => {
     try {
-      const res = await fetch("http://localhost:5001/api/categories");
+      const token = localStorage.getItem("jwtToken");
+
+      const res = await fetch("https://api.skuoriginal.in/api/categories", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!res.ok) {
+        throw new Error("Failed to fetch categories");
+      }
 
       const data = await res.json();
 
@@ -88,7 +96,7 @@ const ItemsPage = () => {
     try {
       const token = localStorage.getItem("jwtToken");
 
-      const res = await fetch(`http://localhost:5001/api/items/${id}`, {
+      const res = await fetch(`https://api.skuoriginal.in/api/items/${id}`, {
         method: "DELETE",
         headers: token
           ? {
@@ -119,6 +127,7 @@ const ItemsPage = () => {
   const exportExcel = () => {
     const exportData = items.map((item, index) => ({
       SrNo: index + 1,
+      ItemName: item.itemName || "N/A",
       SKU: item.code || item.sku,
       Category: item.category?.name || item.category || "N/A",
       Description: item.description || "N/A",
@@ -148,6 +157,7 @@ const ItemsPage = () => {
 
     const tableColumn = [
       "Sr No",
+      "Item Name",
       "SKU",
       "Category",
       "Description",
@@ -158,6 +168,7 @@ const ItemsPage = () => {
 
     const tableRows = items.map((item, index) => [
       index + 1,
+      item.itemName || "N/A",
       item.code || item.sku,
       item.category?.name || "N/A",
       item.description || "N/A",
@@ -212,10 +223,6 @@ const ItemsPage = () => {
               </option>
             ))}
           </select>
-
-          {/* <button className="items-refresh-btn" onClick={handleRefresh}>
-            ↻ Refresh
-          </button> */}
 
           <div className="top-actions">
             <div className="export-dropdown">
@@ -284,24 +291,20 @@ const ItemsPage = () => {
                 >
                   {/* Card Header */}
                   <div className="item-card-header">
-                    <h3 className="item-name">
-                      {item.code || item.sku || "N/A"}
-                    </h3>
+                    <div>
+                      <h3 className="item-name">
+                        {item.itemName || "Unnamed Item"}
+                      </h3>
+
+                      <div className="item-code">
+                        {item.code || item.sku || "N/A"}
+                      </div>
+                    </div>
+
                     <span className="item-category-badge">
                       {item.category?.name || "Uncategorized"}
                     </span>
                   </div>
-
-                  {/* Item Info */}
-                  {/* <div className="item-info">
-                    <div className="item-info-item">
-                      <div className="item-info-icon">🆔</div>
-                      <div className="item-info-text">
-                        <div className="item-info-label">ID</div>
-                        <div className="item-info-value item-id">{item.id}</div>
-                      </div>
-                    </div>
-                  </div> */}
 
                   {/* SKU Section */}
                   {(item.code || item.sku) && (
@@ -406,6 +409,14 @@ const ItemsPage = () => {
             </div>
 
             <div className="modal-category">{selectedItem.category?.name}</div>
+
+            <div className="modal-description-section">
+              <div className="fields-label">📦 Item Name</div>
+
+              <div className="modal-description">
+                {selectedItem.itemName || "N/A"}
+              </div>
+            </div>
 
             {/* SKU */}
 
